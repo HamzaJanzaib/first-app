@@ -7,15 +7,12 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerShown: false,
-          headerStyle: {
-            backgroundColor: '#f4511e',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-        }}  
-      />
+        }}
+        initialRouteName="(tabs)"
+      >
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="task/[id]" options={{ presentation: 'card' }} />
+      </Stack>
     </TaskProvider>
   );
 }

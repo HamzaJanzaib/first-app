@@ -81,7 +81,7 @@ const TaskDetails = () => {
 
           <Text style={styles.label}>Status</Text>
           <View style={styles.statusButtons}>
-            {(['To-do', 'In Progress', 'Done'] as TaskStatus[]).map((s) => (
+            {(['Todo', 'In Progress', 'Done'] as TaskStatus[]).map((s) => (
               <Pressable
                 key={s}
                 style={[styles.statusButton, status === s && styles.statusButtonActive]}
