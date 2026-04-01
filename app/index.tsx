@@ -1,15 +1,19 @@
 import React from "react";
-import { Button, Pressable, ScrollView, TextInput } from "react-native";
+import { Image, ScrollView } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function Index() {
-  const [text, setText] = React.useState("");
   return (
-    <ScrollView contentInsetAdjustmentBehavior="automatic"
-    >
-    <Pressable onPressIn={() => alert("Hello world!")}>
-     <Button title="Press me" onPress={() => alert("Hello world!")} />
-    </Pressable>
-
-    </ScrollView>
+    <SafeAreaProvider>
+      <ScrollView contentInsetAdjustmentBehavior="automatic">
+        
+        <Image
+          source={{
+            uri: "https://reactnative.dev/img/tiny_logo.png",
+          }}
+          style={{ width: 64, height: 64 }}
+        />
+      </ScrollView>
+    </SafeAreaProvider>
   );
 }
