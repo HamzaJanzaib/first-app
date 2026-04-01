@@ -7,7 +7,7 @@ import { StyleSheet, Text, View } from "react-native";
 const STATUS_COLOR = {
   Done: Colors.statusDone,
   "In Progress": Colors.statusInProgress,
-  Todo: Colors.statusTodo,
+  "Todo": Colors.statusTodo,
 };
 
 type TaskCardProps = {

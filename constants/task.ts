@@ -12,6 +12,7 @@ export type Task = {
   time: string;
   status: TaskStatus;
   icon: TaskIcon;
+  createdAt: string; // ISO string representing the date
 };
 
 export const TASKS: Task[] = [
@@ -22,6 +23,7 @@ export const TASKS: Task[] = [
     time: "10:00 AM",
     status: "Done",
     icon: { name: "grid", backgroundColor: "#FF6B8A" },
+    createdAt: new Date(2026, 2, 25).toISOString(), // 2026-03-25 base on DateSelector base
   },
   {
     id: "2",
@@ -30,6 +32,7 @@ export const TASKS: Task[] = [
     time: "12:00 PM",
     status: "In Progress",
     icon: { name: "grid", backgroundColor: "#FF6B8A" },
+    createdAt: new Date(2026, 2, 25).toISOString(),
   },
   {
     id: "3",
@@ -38,6 +41,7 @@ export const TASKS: Task[] = [
     time: "07:00 PM",
     status: "Todo",
     icon: { name: "arrow-down-circle", backgroundColor: "#4ADE80" },
+    createdAt: new Date(2026, 2, 26).toISOString(),
   },
   {
     id: "4",
@@ -46,6 +50,7 @@ export const TASKS: Task[] = [
     time: "09:00 PM",
     status: "Todo",
     icon: { name: "bookmark", backgroundColor: "#FBBF24" },
+    createdAt: new Date(2026, 2, 24).toISOString(),
   },
 ];
 

@@ -18,16 +18,19 @@ const generateDates = (): DateItem[] => {
       month: date.toLocaleDateString("en-US", { month: "short" }),
       day: date.getDate(),
       weekday: date.toLocaleDateString("en-US", { weekday: "short" }),
-      key: date.toISOString(),
+      key: date.toISOString().split('T')[0], // YYYY-MM-DD format for easy matching
     };
   });
 };
 
-const DATES = generateDates();
-const DEFAULT_SELECTED = DATES[2].key;
+export const DATES = generateDates();
 
-const DateSelector = () => {
-  const [selectedDate, setSelectedDate] = useState(DEFAULT_SELECTED);
+type DateSelectorProps = {
+  selectedDate: string;
+  onSelectDate: (date: string) => void;
+};
+
+const DateSelector = ({ selectedDate, onSelectDate }: DateSelectorProps) => {
 
   return (
     <ScrollView
@@ -42,7 +45,7 @@ const DateSelector = () => {
           <TouchableOpacity
             key={item.key}
             style={[styles.dateItem, isSelected && styles.dateItemSelected]}
-            onPress={() => setSelectedDate(item.key)}
+            onPress={() => onSelectDate(item.key)}
           >
             <Text style={[styles.month, isSelected && styles.selectedText]}>
               {item.month}

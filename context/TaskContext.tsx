@@ -3,6 +3,7 @@ import { Task, TASKS } from "@/constants/task";
 
 type TaskContextType = {
   tasks: Task[];
+  addTask: (task: Omit<Task, 'id'>) => void;
   updateTask: (task: Task) => void;
   deleteTask: (id: string) => void;
 };
@@ -13,6 +14,11 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [tasks, setTasks] = useState<Task[]>(TASKS);
+
+  const addTask = (task: Omit<Task, 'id'>) => {
+    const newTask = { ...task, id: Math.random().toString(36).substring(7) };
+    setTasks((prev) => [newTask, ...prev]);
+  };
 
   const updateTask = (updatedTask: Task) => {
     setTasks((prev) =>
@@ -25,7 +31,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <TaskContext.Provider value={{ tasks, updateTask, deleteTask }}>
+    <TaskContext.Provider value={{ tasks, addTask, updateTask, deleteTask }}>
       {children}
     </TaskContext.Provider>
   );
