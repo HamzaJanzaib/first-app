@@ -1,60 +1,58 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Switch, ScrollView } from 'react-native';
-import { Stack } from 'expo-router';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { Stack, useRouter } from 'expo-router';
 import Colors from '@/constants/color';
-import Animated, { FadeInUp } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 
-export default function Privacy() {
-  const [dataSync, setDataSync] = useState(true);
-  const [analytics, setAnalytics] = useState(false);
+export default function PrivacyPolicy() {
+  const insets = useSafeAreaInsets();
+  const router = useRouter();
 
-  const handleToggle = (setter: React.Dispatch<React.SetStateAction<boolean>>, value: boolean) => {
+  const handleBack = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setter(value);
+    router.back();
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Stack.Screen 
-        options={{ 
-          title: 'Privacy Settings', 
-          headerShown: true,
-          headerStyle: { backgroundColor: Colors.surface }, 
-          headerTintColor: Colors.textPrimary 
-        }} 
-      />
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <Stack.Screen options={{ headerShown: false, presentation: 'modal' }} />
       
-      <View style={styles.content}>
-        <Animated.Text entering={FadeInUp.delay(100)} style={styles.sectionHeader}>
-          Data & Analytics
-        </Animated.Text>
-        
-        <Animated.View entering={FadeInUp.delay(200).springify()} style={styles.settingRow}>
-          <View style={styles.textContainer}>
-            <Text style={styles.settingTitle}>Cloud Sync</Text>
-            <Text style={styles.settingDescription}>Sync your tasks securely to the cloud</Text>
-          </View>
-          <Switch 
-            value={dataSync} 
-            onValueChange={(val) => handleToggle(setDataSync, val)}
-            trackColor={{ false: Colors.border, true: Colors.primary }}
-          />
-        </Animated.View>
-
-        <Animated.View entering={FadeInUp.delay(300).springify()} style={styles.settingRow}>
-          <View style={styles.textContainer}>
-            <Text style={styles.settingTitle}>Usage Analytics</Text>
-            <Text style={styles.settingDescription}>Help improve the app by sending anonymous usage data</Text>
-          </View>
-          <Switch 
-            value={analytics} 
-            onValueChange={(val) => handleToggle(setAnalytics, val)}
-            trackColor={{ false: Colors.border, true: Colors.primary }}
-          />
-        </Animated.View>
+      <View style={styles.header}>
+        <Pressable onPress={handleBack} style={styles.backButton}>
+          <Ionicons name="close" size={28} color={Colors.textPrimary} />
+        </Pressable>
+        <Text style={styles.headerTitle}>Privacy Policy</Text>
+        <View style={{ width: 28 }} />
       </View>
-    </ScrollView>
+
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.sectionTitle}>1. Your Privacy</Text>
+        <Text style={styles.bodyText}>
+          Your privacy is important to us. This policy describes how we collect, use, and protect your information when you use our Todo app.
+        </Text>
+
+        <Text style={styles.sectionTitle}>2. Information Collection</Text>
+        <Text style={styles.bodyText}>
+          We only collect information that you explicitly providing in our app, such as your task titles, categories, and profile details.
+        </Text>
+
+        <Text style={styles.sectionTitle}>3. Data Security</Text>
+        <Text style={styles.bodyText}>
+          All task data is stored locally on your device for maximum privacy and performance. We do not use external servers for task persistence.
+        </Text>
+
+        <Text style={styles.sectionTitle}>4. Contact Us</Text>
+        <Text style={styles.bodyText}>
+          If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us at support@todoapp.com.
+        </Text>
+        
+        <View style={styles.lastUpdate}>
+          <Text style={styles.lastUpdateText}>Last Updated: April 01, 2026</Text>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -63,39 +61,45 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
-  content: {
-    padding: 24,
-  },
-  sectionHeader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.textPrimary,
-    marginBottom: 16,
-    marginTop: 8,
-  },
-  settingRow: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: Colors.surface,
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
   },
-  textContainer: {
-    flex: 1,
-    marginRight: 16,
+  backButton: {
+    padding: 4,
   },
-  settingTitle: {
-    fontSize: 16,
+  headerTitle: {
+    fontSize: 20,
     fontWeight: 'bold',
     color: Colors.textPrimary,
-    marginBottom: 4,
   },
-  settingDescription: {
-    fontSize: 14,
+  content: {
+    padding: 24,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.textPrimary,
+    marginBottom: 12,
+    marginTop: 24,
+  },
+  bodyText: {
+    fontSize: 15,
     color: Colors.textSecondary,
+    lineHeight: 22,
+  },
+  lastUpdate: {
+    marginTop: 48,
+    paddingTop: 24,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+  },
+  lastUpdateText: {
+    fontSize: 13,
+    color: Colors.textSecondary,
+    textAlign: 'center',
   },
 });

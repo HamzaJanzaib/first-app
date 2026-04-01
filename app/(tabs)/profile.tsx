@@ -46,17 +46,41 @@ const Profile = () => {
         </View>
 
         <View style={styles.menuSection}>
-          <Pressable style={styles.menuItem} onPress={() => handlePress('/profile/notifications')}>
-            <View style={[styles.menuIconContainer, { backgroundColor: Colors.primaryMuted }]}>
-              <Ionicons name="notifications" size={22} color={Colors.primary} />
+          <Pressable style={styles.menuItem} onPress={() => handlePress('/profile/categories')}>
+            <View style={[styles.menuIconContainer, { backgroundColor: '#FDF2F8' }]}>
+              <Ionicons name="folder" size={22} color="#9d174d" />
             </View>
-            <Text style={styles.menuItemText}>Notifications</Text>
+            <Text style={styles.menuItemText}>Categories</Text>
+            <Ionicons name="chevron-forward" size={20} color={Colors.textSecondary} />
+          </Pressable>
+
+          <Pressable style={styles.menuItem} onPress={() => handlePress('/profile/help')}>
+            <View style={[styles.menuIconContainer, { backgroundColor: '#EFF6FF' }]}>
+              <Ionicons name="help-circle" size={22} color="#1d4ed8" />
+            </View>
+            <Text style={styles.menuItemText}>Help & Support</Text>
+            <Ionicons name="chevron-forward" size={20} color={Colors.textSecondary} />
+          </Pressable>
+
+          <Pressable style={styles.menuItem} onPress={() => handlePress('/profile/privacy')}>
+            <View style={[styles.menuIconContainer, { backgroundColor: '#F0FDF4' }]}>
+              <Ionicons name="shield-checkmark" size={22} color="#15803d" />
+            </View>
+            <Text style={styles.menuItemText}>Privacy Policy</Text>
+            <Ionicons name="chevron-forward" size={20} color={Colors.textSecondary} />
+          </Pressable>
+
+          <Pressable style={styles.menuItem} onPress={() => handlePress('/profile/terms')}>
+            <View style={[styles.menuIconContainer, { backgroundColor: '#FFF7ED' }]}>
+              <Ionicons name="document-text" size={22} color="#c2410c" />
+            </View>
+            <Text style={styles.menuItemText}>Terms & Conditions</Text>
             <Ionicons name="chevron-forward" size={20} color={Colors.textSecondary} />
           </Pressable>
 
           <Pressable style={styles.menuItem} onPress={() => handlePress('/profile/settings')}>
-            <View style={[styles.menuIconContainer, { backgroundColor: '#F0F9FF' }]}>
-              <Ionicons name="settings" size={22} color="#0EA5E9" />
+            <View style={[styles.menuIconContainer, { backgroundColor: '#F8FAFC' }]}>
+              <Ionicons name="settings" size={22} color="#475569" />
             </View>
             <Text style={styles.menuItemText}>Settings</Text>
             <Ionicons name="chevron-forward" size={20} color={Colors.textSecondary} />

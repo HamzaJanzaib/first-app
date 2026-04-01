@@ -55,6 +55,11 @@ const Index = () => {
     setIsNotificationVisible(true);
   };
 
+  const handleOpenSearch = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.push('/profile/search' as any);
+  };
+
   const handleViewAll = () => {
     setIsNotificationVisible(false);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -70,7 +75,10 @@ const Index = () => {
         keyExtractor={(item) => item.id}
         ListHeaderComponent={
           <>
-            <Header onPressNotification={handleOpenNotifications} />
+            <Header 
+              onPressNotification={handleOpenNotifications} 
+              onPressSearch={handleOpenSearch}
+            />
             <DateSelector selectedDate={selectedDate} onSelectDate={setSelectedDate} />
             <FilterTabs selected={selectedFilter} onSelect={setSelectedFilter} />
           </>

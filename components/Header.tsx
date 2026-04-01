@@ -5,17 +5,18 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type HeaderProps = {
   onPressNotification?: () => void;
-  onPressBack?: () => void;
+  onPressSearch?: () => void;
+  title?: string;
 };
 
-const Header = ({ onPressNotification, onPressBack }: HeaderProps) => {
+const Header = ({ onPressNotification, onPressSearch, title = "Today's Task" }: HeaderProps) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.iconButton} onPress={onPressBack}>
-        <Ionicons name="chevron-back" size={22} color={Colors.textPrimary} />
+      <TouchableOpacity style={styles.iconButton} onPress={onPressSearch}>
+        <Ionicons name="search" size={22} color={Colors.textPrimary} />
       </TouchableOpacity>
 
-      <Text style={styles.title}>Today's Task</Text>
+      <Text style={styles.title}>{title}</Text>
 
       <TouchableOpacity style={styles.iconButton} onPress={onPressNotification}>
         <Ionicons
