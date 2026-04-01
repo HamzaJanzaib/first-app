@@ -7,11 +7,14 @@ export default function Index() {
     <ScrollView contentInsetAdjustmentBehavior="automatic"
     >
     <TextInput
+      keyboardType="name-phone-pad"
       placeholder="Enter text here..."
       value={text}
       onChangeText={(newText) => setText(newText)}
+      multiline
+      numberOfLines={3}
       style={{
-        height: 40,
+        height: 80,
         borderColor: "gray",
         borderWidth: 1,
         margin: 10,
