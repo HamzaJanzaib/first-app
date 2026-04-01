@@ -1,29 +1,24 @@
 import React from "react";
-import { Button, ScrollView, Switch, Text, View } from "react-native";
+import { ScrollView, TextInput } from "react-native";
 
 export default function Index() {
-  const [isSwitchOn, setIsSwitchOn] = React.useState(false);
+  const [text, setText] = React.useState("");
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic"
     >
-      <Text>Hello World.</Text>
-      <Button
-        title="Press me"
-        onPress={() => alert("Button pressed!")}
-      />
-        {
-          [...Array(60)].map((_, i) => (
-            <Text key={i}>Item {i + 1}</Text>
-          ))
-        }
-      <Switch
-        trackColor={{ false: "#767577", true: "#81b91a" }}
-        thumbColor={true ? "#f5ddff" : "#f4f3f4"}
-        onValueChange={(value) => {
-          setIsSwitchOn(value);
-        }}
-        value={isSwitchOn}
-      />
+    <TextInput
+      placeholder="Enter text here..."
+      value={text}
+      onChangeText={(newText) => setText(newText)}
+      style={{
+        height: 40,
+        borderColor: "gray",
+        borderWidth: 1,
+        margin: 10,
+        padding: 10,
+        borderRadius: 12,
+      }}
+    />
 
     </ScrollView>
   );
