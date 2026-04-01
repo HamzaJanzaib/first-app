@@ -5,6 +5,7 @@ import { useTasks } from '@/context/TaskContext';
 import Colors from '@/constants/color';
 import { Ionicons } from '@expo/vector-icons';
 import { TaskStatus } from '@/constants/task';
+import * as Haptics from 'expo-haptics';
 
 const TaskDetails = () => {
   const { id } = useLocalSearchParams();
@@ -12,11 +13,6 @@ const TaskDetails = () => {
   const router = useRouter();
 
   const task = tasks.find((t) => t.id === id);
-
-  const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState(task?.title || '');
-  const [category, setCategory] = useState(task?.category || '');
-  const [status, setStatus] = useState<TaskStatus>(task?.status || 'Todo');
 
   if (!task) {
     return (
@@ -27,17 +23,16 @@ const TaskDetails = () => {
     );
   }
 
-  const handleSave = () => {
-    updateTask({
-      ...task,
-      title,
-      category,
-      status,
-    });
-    setIsEditing(false);
+  const handleEdit = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.push({
+      pathname: '/edit-task',
+      params: { taskId: id as string }
+    } as any);
   };
 
   const handleDelete = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     Alert.alert('Delete Task', 'Are you sure you want to delete this task?', [
       { text: 'Cancel', style: 'cancel' },
       {
@@ -45,11 +40,7 @@ const TaskDetails = () => {
         style: 'destructive',
         onPress: () => {
           deleteTask(task.id);
-          if (router.canGoBack()) {
-            router.back();
-          } else {
-            router.replace('/');
-          }
+          router.replace('/');
         },
       },
     ]);
@@ -57,82 +48,43 @@ const TaskDetails = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Stack.Screen options={{ title: 'Task Details', headerShown: true, headerStyle: { backgroundColor: Colors.surface }, headerTintColor: Colors.textPrimary }} />
+      <Stack.Screen options={{ title: 'Details', headerShown: true, headerStyle: { backgroundColor: Colors.surface }, headerTintColor: Colors.textPrimary }} />
       
-      {isEditing ? (
-        <View style={styles.card}>
-          <Text style={styles.label}>Title</Text>
-          <TextInput
-            style={styles.input}
-            value={title}
-            onChangeText={setTitle}
-            placeholder="Task Title"
-            placeholderTextColor={Colors.textSecondary}
-          />
+      <View style={styles.card}>
+        <View style={[styles.iconBadge, { backgroundColor: task.icon.backgroundColor || Colors.primary }]}>
+          <Ionicons name={task.icon.name as any} size={32} color="#fff" />
+        </View>
+        
+        <Text style={styles.category}>{task.category}</Text>
+        <Text style={styles.title}>{task.title}</Text>
+        
+        <View style={styles.infoRow}>
+          <Ionicons name="time-outline" size={20} color={Colors.primary} />
+          <Text style={styles.infoText}>{task.time}</Text>
+        </View>
 
-          <Text style={styles.label}>Category</Text>
-          <TextInput
-            style={styles.input}
-            value={category}
-            onChangeText={setCategory}
-            placeholder="Category"
-            placeholderTextColor={Colors.textSecondary}
-          />
+        <View style={styles.infoRow}>
+          <Ionicons name="calendar-outline" size={20} color={Colors.primary} />
+          <Text style={styles.infoText}>{new Date(task.createdAt).toLocaleDateString()}</Text>
+        </View>
 
-          <Text style={styles.label}>Status</Text>
-          <View style={styles.statusButtons}>
-            {(['Todo', 'In Progress', 'Done'] as TaskStatus[]).map((s) => (
-              <Pressable
-                key={s}
-                style={[styles.statusButton, status === s && styles.statusButtonActive]}
-                onPress={() => setStatus(s)}
-              >
-                <Text style={[styles.statusButtonText, status === s && styles.statusButtonTextActive]}>
-                  {s}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
+        <View style={styles.infoRow}>
+          <Ionicons name="flag-outline" size={20} color={Colors.primary} />
+          <Text style={styles.infoText}>{task.status}</Text>
+        </View>
 
-          <Pressable style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.saveButtonText}>Save Changes</Text>
+        <View style={styles.actions}>
+          <Pressable style={styles.editButton} onPress={handleEdit}>
+            <Ionicons name="pencil" size={20} color="#fff" />
+            <Text style={styles.actionText}>Edit Task</Text>
           </Pressable>
-          <Pressable style={styles.cancelButton} onPress={() => setIsEditing(false)}>
-            <Text style={styles.cancelButtonText}>Cancel</Text>
+          
+          <Pressable style={styles.deleteButton} onPress={handleDelete}>
+            <Ionicons name="trash" size={20} color="#fff" />
+            <Text style={styles.actionText}>Delete</Text>
           </Pressable>
         </View>
-      ) : (
-        <View style={styles.card}>
-          <View style={[styles.iconBadge, { backgroundColor: task.icon.backgroundColor }]}>
-            <Ionicons name={task.icon.name as any} size={32} color="#fff" />
-          </View>
-          
-          <Text style={styles.category}>{task.category}</Text>
-          <Text style={styles.title}>{task.title}</Text>
-          
-          <View style={styles.infoRow}>
-            <Ionicons name="time-outline" size={20} color={Colors.primary} />
-            <Text style={styles.infoText}>{task.time}</Text>
-          </View>
-
-          <View style={styles.infoRow}>
-            <Ionicons name="flag-outline" size={20} color={Colors.primary} />
-            <Text style={styles.infoText}>{task.status}</Text>
-          </View>
-
-          <View style={styles.actions}>
-            <Pressable style={styles.editButton} onPress={() => setIsEditing(true)}>
-              <Ionicons name="pencil" size={20} color="#fff" />
-              <Text style={styles.actionText}>Edit</Text>
-            </Pressable>
-            
-            <Pressable style={styles.deleteButton} onPress={handleDelete}>
-              <Ionicons name="trash" size={20} color="#fff" />
-              <Text style={styles.actionText}>Delete</Text>
-            </Pressable>
-          </View>
-        </View>
-      )}
+      </View>
     </ScrollView>
   );
 };

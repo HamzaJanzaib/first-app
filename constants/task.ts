@@ -15,6 +15,12 @@ export type Task = {
   createdAt: string; // ISO string representing the date
 };
 
+const getRelativeDate = (offsetDays: number) => {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  return date.toISOString();
+};
+
 export const TASKS: Task[] = [
   {
     id: "1",
@@ -23,7 +29,7 @@ export const TASKS: Task[] = [
     time: "10:00 AM",
     status: "Done",
     icon: { name: "grid", backgroundColor: "#FF6B8A" },
-    createdAt: new Date(2026, 2, 25).toISOString(), // 2026-03-25 base on DateSelector base
+    createdAt: getRelativeDate(0), // Today
   },
   {
     id: "2",
@@ -32,7 +38,7 @@ export const TASKS: Task[] = [
     time: "12:00 PM",
     status: "In Progress",
     icon: { name: "grid", backgroundColor: "#FF6B8A" },
-    createdAt: new Date(2026, 2, 25).toISOString(),
+    createdAt: getRelativeDate(0), // Today
   },
   {
     id: "3",
@@ -40,8 +46,8 @@ export const TASKS: Task[] = [
     title: "Create Low-fidelity Wireframe",
     time: "07:00 PM",
     status: "Todo",
-    icon: { name: "arrow-down-circle", backgroundColor: "#4ADE80" },
-    createdAt: new Date(2026, 2, 26).toISOString(),
+    icon: { name: "terminal", backgroundColor: "#4ADE80" },
+    createdAt: getRelativeDate(1), // Tomorrow
   },
   {
     id: "4",
@@ -50,7 +56,43 @@ export const TASKS: Task[] = [
     time: "09:00 PM",
     status: "Todo",
     icon: { name: "bookmark", backgroundColor: "#FBBF24" },
-    createdAt: new Date(2026, 2, 24).toISOString(),
+    createdAt: getRelativeDate(-1), // Yesterday
+  },
+  {
+    id: "5",
+    category: "Personal Study",
+    title: "Read React Native Docs",
+    time: "08:00 AM",
+    status: "Done",
+    icon: { name: "school", backgroundColor: "#60A5FA" },
+    createdAt: getRelativeDate(-2),
+  },
+  {
+    id: "6",
+    category: "Health & Fitness",
+    title: "Morning Routine Gym",
+    time: "06:30 AM",
+    status: "Todo",
+    icon: { name: "barbell", backgroundColor: "#A78BFA" },
+    createdAt: getRelativeDate(2),
+  },
+  {
+    id: "7",
+    category: "Work Projects",
+    title: "Review PRs for Mobile App",
+    time: "11:30 AM",
+    status: "In Progress",
+    icon: { name: "briefcase", backgroundColor: "#F472B6" },
+    createdAt: getRelativeDate(0),
+  },
+  {
+    id: "8",
+    category: "Home Responsibilities",
+    title: "Buy Groceries for dinner",
+    time: "05:00 PM",
+    status: "Todo",
+    icon: { name: "cart", backgroundColor: "#34D399" },
+    createdAt: getRelativeDate(3),
   },
 ];
 
