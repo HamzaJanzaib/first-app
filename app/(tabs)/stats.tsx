@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTasks } from '@/context/TaskContext';
 import Animated, { FadeInUp, FadeInRight } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import AttractionBackground from '@/components/AttractionBackground';
 
 const { width } = Dimensions.get('window');
 
@@ -23,6 +24,7 @@ export default function ProductivityStats() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
+      <AttractionBackground />
       <Stack.Screen options={{ headerShown: false }} />
       
       <View style={styles.header}>

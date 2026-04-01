@@ -8,6 +8,7 @@ import { useTasks } from '@/context/TaskContext';
 import TaskCard from '@/components/TaskCard';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import AttractionBackground from '@/components/AttractionBackground';
 
 export default function SearchTasks() {
   const insets = useSafeAreaInsets();
@@ -26,6 +27,7 @@ export default function SearchTasks() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
+      <AttractionBackground />
       <Stack.Screen options={{ headerShown: false }} />
       
       <View style={styles.header}>

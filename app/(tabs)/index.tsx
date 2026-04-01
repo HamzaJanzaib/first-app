@@ -11,8 +11,9 @@ import TaskCard from '@/components/TaskCard';
 import { useTasks } from '@/context/TaskContext';
 import { Link, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import Animated, { FadeInUp, FadeInDown, FadeOut } from 'react-native-reanimated';
+import Animated, { FadeInUp, FadeInDown, FadeOut, Layout } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import AttractionBackground from '@/components/AttractionBackground';
 
 const Index = () => {
   const insets = useSafeAreaInsets();
@@ -68,6 +69,7 @@ const Index = () => {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top, paddingLeft: insets.left, paddingRight: insets.right }]} >
+      <AttractionBackground />
       <ExpoStatusBar style="light" backgroundColor={Colors.background} />
 
       <FlatList
