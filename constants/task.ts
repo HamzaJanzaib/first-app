@@ -1,4 +1,4 @@
-export type TaskStatus = "Done" | "In Progress" | "To-do";
+export type TaskStatus = "Done" | "In Progress" | "Todo";
 
 export type TaskIcon = {
   name: string;
@@ -36,7 +36,7 @@ export const TASKS: Task[] = [
     category: "Uber Eats redesign challenge",
     title: "Create Low-fidelity Wireframe",
     time: "07:00 PM",
-    status: "To-do",
+    status: "Todo",
     icon: { name: "arrow-down-circle", backgroundColor: "#4ADE80" },
   },
   {
@@ -44,7 +44,7 @@ export const TASKS: Task[] = [
     category: "About design sprint",
     title: "How to pitch a Design Sprint",
     time: "09:00 PM",
-    status: "To-do",
+    status: "Todo",
     icon: { name: "bookmark", backgroundColor: "#FBBF24" },
   },
 ];

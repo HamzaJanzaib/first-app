@@ -1,23 +1,40 @@
 import Colors from '@/constants/color';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FilterOptions, TASKS } from '@/constants/task';
+import { FilterOptions } from '@/constants/task';
 import Header from '@/components/Header';
 import DateSelector from '@/components/DateSelector';
-import React from 'react';
+import React, { useMemo } from 'react';
 import FilterTabs from '@/components/FilterTabs';
 import TaskCard from '@/components/TaskCard';
+import { useTasks } from '@/context/TaskContext';
+import { Link } from 'expo-router';
 
 const Index = () => {
   const insets = useSafeAreaInsets();
   const [selectedFilter, setSelectedFilter] = React.useState<FilterOptions>('All');
+  const { tasks } = useTasks();
+
+  const filteredTasks = useMemo(() => {
+    if (selectedFilter === 'All') return tasks;
+
+    // Map the FilterOptions to the actual TaskStatus
+    const statusMap: Record<string, string> = {
+      'To do': 'To-do',
+      'In Progress': 'In Progress',
+      'Completed': 'Done'
+    };
+
+    return tasks.filter((task) => task.status === statusMap[selectedFilter]);
+  }, [tasks, selectedFilter]);
+
   return (
     <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom, paddingLeft: insets.left, paddingRight: insets.right }]} >
       <ExpoStatusBar style="light" backgroundColor={Colors.background} />
 
       <FlatList
-        data={TASKS}
+        data={filteredTasks}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={
           <>
@@ -31,7 +48,13 @@ const Index = () => {
           </>
         }
         contentContainerStyle={styles.list}
-        renderItem={({ item }) => <TaskCard task={item} />}
+        renderItem={({ item }) => (
+          <Link href={`/task/${item.id}` as any} asChild>
+            <Pressable>
+              <TaskCard task={item} />
+            </Pressable>
+          </Link>
+        )}
       />
 
     </View>
