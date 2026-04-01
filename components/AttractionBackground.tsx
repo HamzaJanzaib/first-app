@@ -14,6 +14,7 @@ const { width, height } = Dimensions.get('window');
 export default function AttractionBackground() {
   const move1 = useSharedValue(0);
   const move2 = useSharedValue(0);
+  const rotation = useSharedValue(0);
 
   useEffect(() => {
     move1.value = withRepeat(
@@ -32,6 +33,11 @@ export default function AttractionBackground() {
       -1,
       true
     );
+    rotation.value = withRepeat(
+      withTiming(360, { duration: 25000 }),
+      -1,
+      false
+    );
   }, []);
 
   const animatedStyle1 = useAnimatedStyle(() => ({
@@ -48,10 +54,22 @@ export default function AttractionBackground() {
     ],
   }));
 
+  const textureStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${rotation.value}deg` }],
+  }));
+
   return (
     <View style={styles.absoluteLayer}>
+      {/* Mesh Glows */}
       <Animated.View style={[styles.glow, styles.glow1, animatedStyle1]} />
       <Animated.View style={[styles.glow, styles.glow2, animatedStyle2]} />
+
+      {/* Top Left Texture Animation */}
+      <Animated.View style={[styles.textureContainer, textureStyle]}>
+         <View style={styles.textureShape1} />
+         <View style={styles.textureShape2} />
+      </Animated.View>
+
       <View style={styles.darkOverlay} />
     </View>
   );
@@ -81,8 +99,36 @@ const styles = StyleSheet.create({
     bottom: -100,
     right: -50,
   },
+  textureContainer: {
+    position: 'absolute',
+    top: -50,
+    left: -50,
+    width: 200,
+    height: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 0.2,
+  },
+  textureShape1: {
+    width: 140,
+    height: 140,
+    borderRadius: 30,
+    borderWidth: 2,
+    borderColor: Colors.primary,
+    position: 'absolute',
+    transform: [{ rotate: '45deg' }],
+  },
+  textureShape2: {
+    width: 100,
+    height: 100,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#6366f1',
+    position: 'absolute',
+    transform: [{ rotate: '-15deg' }],
+  },
   darkOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(9, 9, 11, 0.6)', // Glass layer
+    backgroundColor: 'rgba(9, 9, 11, 0.7)', // Slightly darker for focus
   },
 });

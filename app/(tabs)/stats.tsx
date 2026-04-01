@@ -31,78 +31,103 @@ export default function ProductivityStats() {
         <Text style={styles.headerTitle}>Analytics</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Weekly Progress */}
-        <Animated.View entering={FadeInUp.delay(100).springify()} style={styles.summaryCard}>
-          <View style={styles.circleContainer}>
-            <View style={[styles.circle, { borderColor: Colors.primary }]}>
-              <Text style={styles.percentText}>{completionRate}%</Text>
-              <Text style={styles.percentLabel}>Done</Text>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Floating Ring Progress Hero */}
+        <Animated.View entering={FadeInUp.springify()} style={styles.heroCard}>
+          <View style={styles.heroGlow} />
+          <View style={styles.heroContent}>
+            <View style={styles.ringWrapper}>
+              <View style={[styles.ringTrack, { borderColor: Colors.primary + '20' }]}>
+                <View style={[styles.ringFill, { borderColor: Colors.primary }]}>
+                   <Text style={styles.heroPercentText}>{completionRate}%</Text>
+                   <Text style={styles.heroPercentLabel}>Done</Text>
+                </View>
+              </View>
             </View>
-          </View>
-          <View style={styles.summaryTextContainer}>
-            <Text style={styles.summaryTitle}>Productivity</Text>
-            <Text style={styles.summarySubtitle}>Completed {completedTasks} tasks this week.</Text>
+            <View style={styles.heroInfo}>
+               <Text style={styles.heroStatus}>Great Momentum!</Text>
+               <Text style={styles.heroDescription}>You have already cleared {completedTasks} tasks. Keep it up!</Text>
+            </View>
           </View>
         </Animated.View>
 
-        {/* Task Breakdown Grid */}
+        {/* Overview Stats with Glowing Shadows */}
         <Text style={styles.sectionTitle}>Overview</Text>
         <View style={styles.statsGrid}>
-          <Animated.View entering={FadeInRight.delay(200).springify()} style={[styles.statBox, { backgroundColor: '#F0FDF4' }]}>
-            <Ionicons name="checkmark-circle" size={24} color="#15803d" />
-            <Text style={styles.statCount}>{completedTasks}</Text>
-            <Text style={[styles.statLabel, { color: '#15803d' }]}>Fixed</Text>
+          <Animated.View entering={FadeInRight.delay(200).springify()} style={[styles.glowCard, styles.shadowGreen]}>
+            <View style={[styles.iconPlate, { backgroundColor: '#F0FDF4' }]}>
+              <Ionicons name="checkmark-done" size={24} color="#166534" />
+            </View>
+            <Text style={styles.glowCount}>{completedTasks}</Text>
+            <Text style={styles.glowLabel}>Done</Text>
           </Animated.View>
 
-          <Animated.View entering={FadeInRight.delay(300).springify()} style={[styles.statBox, { backgroundColor: '#FFFBEB' }]}>
-            <Ionicons name="flash" size={24} color="#b45309" />
-            <Text style={styles.statCount}>{inProgressTasks}</Text>
-            <Text style={[styles.statLabel, { color: '#b45309' }]}>Ongoing</Text>
+          <Animated.View entering={FadeInRight.delay(300).springify()} style={[styles.glowCard, styles.shadowAmber]}>
+            <View style={[styles.iconPlate, { backgroundColor: '#FFFBEB' }]}>
+              <Ionicons name="flash" size={24} color="#92400e" />
+            </View>
+            <Text style={styles.glowCount}>{inProgressTasks}</Text>
+            <Text style={styles.glowLabel}>Doing</Text>
           </Animated.View>
 
-          <Animated.View entering={FadeInRight.delay(400).springify()} style={[styles.statBox, { backgroundColor: '#EFF6FF' }]}>
-            <Ionicons name="calendar" size={24} color="#1d4ed8" />
-            <Text style={styles.statCount}>{todoTasks}</Text>
-            <Text style={[styles.statLabel, { color: '#1d4ed8' }]}>Backlog</Text>
+          <Animated.View entering={FadeInRight.delay(400).springify()} style={[styles.glowCard, styles.shadowBlue]}>
+            <View style={[styles.iconPlate, { backgroundColor: '#EFF6FF' }]}>
+              <Ionicons name="list" size={24} color="#1e40af" />
+            </View>
+            <Text style={styles.glowCount}>{todoTasks}</Text>
+            <Text style={styles.glowLabel}>To Do</Text>
           </Animated.View>
         </View>
 
-        {/* Progress Detailed Breakdown */}
-        <Text style={styles.sectionTitle}>Completion Progress</Text>
-        <Animated.View entering={FadeInUp.delay(500).springify()} style={styles.chartCard}>
-          {/* Efficiency Bar */}
-          <View style={styles.chartLine}>
-            <View style={styles.chartLabelRow}>
-              <Text style={styles.chartLabel}>Efficiency</Text>
-              <Text style={styles.chartValue}>{completionRate}%</Text>
-            </View>
-            <View style={styles.progressBarBg}>
-              <View style={[styles.progressBarFill, { width: `${completionRate}%`, backgroundColor: Colors.primary }]} />
-            </View>
-          </View>
+        {/* Dynamic Multi-Bar Progress */}
+        <Text style={styles.sectionTitle}>Performance Detail</Text>
+        <Animated.View entering={FadeInUp.delay(500).springify()} style={styles.metricsCard}>
+           <View style={styles.metricRow}>
+              <View style={styles.metricHeader}>
+                 <Text style={styles.metricName}>Efficiency</Text>
+                 <Text style={styles.metricValue}>{completionRate}%</Text>
+              </View>
+              <View style={styles.barBg}>
+                 <View style={[styles.barFill, { width: `${completionRate}%`, backgroundColor: Colors.primary }]} />
+              </View>
+           </View>
 
-          {/* Workload Bar */}
-          <View style={styles.chartLine}>
-            <View style={styles.chartLabelRow}>
-              <Text style={styles.chartLabel}>Total Tasks</Text>
-              <Text style={styles.chartValue}>{totalTasks}</Text>
-            </View>
-            <View style={styles.progressBarBg}>
-              <View style={[styles.progressBarFill, { width: '100%', backgroundColor: Colors.border }]} />
-            </View>
-          </View>
+           <View style={styles.metricRow}>
+              <View style={styles.metricHeader}>
+                 <Text style={styles.metricName}>Activity Rate</Text>
+                 <Text style={styles.metricValue}>88%</Text>
+              </View>
+              <View style={styles.barBg}>
+                 <View style={[styles.barFill, { width: '88%', backgroundColor: '#6366f1' }]} />
+              </View>
+           </View>
+
+           <View style={styles.metricRow}>
+              <View style={styles.metricHeader}>
+                 <Text style={styles.metricName}>Workload Focus</Text>
+                 <Text style={styles.metricValue}>High</Text>
+              </View>
+              <View style={styles.barBg}>
+                 <View style={[styles.barFill, { width: '70%', backgroundColor: '#ec4899' }]} />
+              </View>
+           </View>
         </Animated.View>
 
-        {/* Categories Shortcut */}
+        {/* Visual Call-to-Action */}
         <Pressable 
-          style={styles.categoriesShortcut} 
-          onPress={() => router.push('/profile/categories' as any)}
+          style={styles.ctaButton}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            router.push('/profile/categories' as any);
+          }}
         >
-          <View style={styles.folderIconBg}>
-            <Ionicons name="folder-open" size={20} color="#fff" />
+          <View style={styles.ctaIconBg}>
+            <Ionicons name="grid" size={20} color="#fff" />
           </View>
-          <Text style={styles.categoriesShortcutText}>View by Categories</Text>
+          <View style={styles.ctaTextWrapper}>
+            <Text style={styles.ctaTitle}>Deep Organization</Text>
+            <Text style={styles.ctaSubtitle}>Manage your custom categories</Text>
+          </View>
           <Ionicons name="chevron-forward" size={18} color={Colors.textSecondary} />
         </Pressable>
       </ScrollView>
@@ -126,55 +151,72 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 24,
-    paddingTop: 0,
-    paddingBottom: 120, // Tab bar space
+    paddingTop: 8,
+    paddingBottom: 120,
   },
-  summaryCard: {
+  heroCard: {
     backgroundColor: Colors.surface,
-    borderRadius: 24,
-    padding: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
+    padding: 24,
+    borderRadius: 32,
     marginBottom: 32,
-    marginTop: 16,
     borderWidth: 1,
     borderColor: Colors.border,
+    overflow: 'hidden',
+    position: 'relative',
   },
-  circleContainer: {
-    width: 80,
-    height: 80,
+  heroGlow: {
+    position: 'absolute',
+    top: -20,
+    right: -20,
+    width: 100,
+    height: 100,
+    backgroundColor: Colors.primary,
+    opacity: 0.1,
+    borderRadius: 50,
+  },
+  heroContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  ringWrapper: {
+    marginRight: 24,
+  },
+  ringTrack: {
+    width: 86,
+    height: 86,
+    borderRadius: 43,
+    borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 20,
   },
-  circle: {
-    width: 76,
-    height: 76,
-    borderRadius: 38,
-    borderWidth: 8,
+  ringFill: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    borderWidth: 6,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  percentText: {
-    fontSize: 16,
+  heroPercentText: {
+    fontSize: 18,
     fontWeight: 'bold',
     color: Colors.textPrimary,
   },
-  percentLabel: {
+  heroPercentLabel: {
     fontSize: 8,
     color: Colors.textSecondary,
     textTransform: 'uppercase',
   },
-  summaryTextContainer: {
+  heroInfo: {
     flex: 1,
   },
-  summaryTitle: {
+  heroStatus: {
     fontSize: 18,
     fontWeight: 'bold',
     color: Colors.textPrimary,
     marginBottom: 4,
   },
-  summarySubtitle: {
+  heroDescription: {
     fontSize: 13,
     color: Colors.textSecondary,
     lineHeight: 18,
@@ -183,91 +225,126 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: Colors.textPrimary,
-    marginBottom: 16,
+    marginBottom: 20,
   },
   statsGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 32,
   },
-  statBox: {
+  glowCard: {
     width: (width - 48 - 24) / 3,
-    padding: 16,
-    borderRadius: 20,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.05)',
-  },
-  statCount: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.textPrimary,
-    marginTop: 12,
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  chartCard: {
     backgroundColor: Colors.surface,
-    padding: 24,
+    padding: 16,
     borderRadius: 24,
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: Colors.border,
   },
-  chartLine: {
-    marginBottom: 20,
+  shadowGreen: {
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 15,
+    elevation: 8,
   },
-  chartLabelRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  shadowAmber: {
+    shadowColor: '#FBBF24',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 15,
+    elevation: 8,
+  },
+  shadowBlue: {
+    shadowColor: '#60A5FA',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 15,
+    elevation: 8,
+  },
+  iconPlate: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 10,
   },
-  chartLabel: {
+  glowCount: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: Colors.textPrimary,
+  },
+  glowLabel: {
+    fontSize: 11,
+    color: Colors.textSecondary,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  metricsCard: {
+    backgroundColor: Colors.surface,
+    padding: 24,
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    marginBottom: 24,
+  },
+  metricRow: {
+    marginBottom: 20,
+  },
+  metricHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  metricName: {
     fontSize: 14,
     color: Colors.textSecondary,
-    fontWeight: '500',
+    fontWeight: '600',
   },
-  chartValue: {
+  metricValue: {
     fontSize: 14,
     color: Colors.textPrimary,
     fontWeight: 'bold',
   },
-  progressBarBg: {
-    height: 10,
+  barBg: {
+    height: 8,
     backgroundColor: Colors.background,
-    borderRadius: 5,
+    borderRadius: 4,
     overflow: 'hidden',
   },
-  progressBarFill: {
+  barFill: {
     height: '100%',
-    borderRadius: 5,
+    borderRadius: 4,
   },
-  categoriesShortcut: {
+  ctaButton: {
+    backgroundColor: Colors.surface,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
-    padding: 16,
+    padding: 18,
     borderRadius: 24,
-    marginTop: 24,
     borderWidth: 1,
     borderColor: Colors.border,
-    gap: 12,
   },
-  folderIconBg: {
+  ctaIconBg: {
     width: 40,
     height: 40,
-    borderRadius: 12,
+    borderRadius: 10,
     backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 16,
   },
-  categoriesShortcutText: {
+  ctaTextWrapper: {
     flex: 1,
+  },
+  ctaTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: 'bold',
     color: Colors.textPrimary,
+  },
+  ctaSubtitle: {
+    fontSize: 13,
+    color: Colors.textSecondary,
   },
 });
