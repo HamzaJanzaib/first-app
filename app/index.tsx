@@ -1,6 +1,8 @@
-import { Button, Text, View } from "react-native";
+import React from "react";
+import { Button, Switch, Text, View } from "react-native";
 
 export default function Index() {
+  const [isSwitchOn, setIsSwitchOn] = React.useState(false);
   return (
     <View
       style={{
@@ -15,6 +17,15 @@ export default function Index() {
         title="Press me"
         onPress={() => alert("Button pressed!")}
       />
+      <Switch
+        trackColor={{ false: "#767577", true: "#81b91a" }}
+        thumbColor={true ? "#f5ddff" : "#f4f3f4"}
+        onValueChange={(value) => {
+          setIsSwitchOn(value);
+        }}
+        value={isSwitchOn}
+      />
+
     </View>
   );
 }
