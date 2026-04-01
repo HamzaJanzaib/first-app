@@ -1,17 +1,18 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Animated, { 
+  useSharedValue, 
   useAnimatedStyle, 
-  withRepeat, 
   withTiming, 
-  withSequence,
-  useSharedValue,
+  withRepeat, 
+  withSequence 
 } from 'react-native-reanimated';
-import Colors from '@/constants/color';
+import { useTheme } from '@/context/ThemeContext';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export default function AttractionBackground() {
+  const { colors, isDark } = useTheme();
   const move1 = useSharedValue(0);
   const move2 = useSharedValue(0);
   const rotation = useSharedValue(0);
@@ -59,18 +60,18 @@ export default function AttractionBackground() {
   }));
 
   return (
-    <View style={styles.absoluteLayer}>
+    <View style={[styles.absoluteLayer, { backgroundColor: colors.background }]}>
       {/* Mesh Glows */}
-      <Animated.View style={[styles.glow, styles.glow1, animatedStyle1]} />
-      <Animated.View style={[styles.glow, styles.glow2, animatedStyle2]} />
+      <Animated.View style={[styles.glow, styles.glow1, animatedStyle1, { backgroundColor: colors.primary, opacity: isDark ? 0.12 : 0.08 }]} />
+      <Animated.View style={[styles.glow, styles.glow2, animatedStyle2, { backgroundColor: isDark ? '#6366f1' : '#3b82f6', opacity: isDark ? 0.12 : 0.08 }]} />
 
       {/* Top Left Texture Animation */}
-      <Animated.View style={[styles.textureContainer, textureStyle]}>
-         <View style={styles.textureShape1} />
-         <View style={styles.textureShape2} />
+      <Animated.View style={[styles.textureContainer, textureStyle, { opacity: isDark ? 0.2 : 0.1 }]}>
+         <View style={[styles.textureShape1, { borderColor: colors.primary }]} />
+         <View style={[styles.textureShape2, { borderColor: isDark ? '#6366f1' : '#3b82f6' }]} />
       </Animated.View>
 
-      <View style={styles.darkOverlay} />
+      <View style={[styles.darkOverlay, { backgroundColor: isDark ? 'rgba(9, 9, 11, 0.7)' : 'rgba(255, 255, 255, 0.1)' }]} />
     </View>
   );
 }
@@ -78,7 +79,6 @@ export default function AttractionBackground() {
 const styles = StyleSheet.create({
   absoluteLayer: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: Colors.background,
     overflow: 'hidden',
     zIndex: -1,
   },
@@ -87,15 +87,12 @@ const styles = StyleSheet.create({
     width: width * 0.8,
     height: width * 0.8,
     borderRadius: (width * 0.8) / 2,
-    opacity: 0.15,
   },
   glow1: {
-    backgroundColor: Colors.primary,
     top: -100,
     left: -50,
   },
   glow2: {
-    backgroundColor: '#6366f1', // Indigo glow
     bottom: -100,
     right: -50,
   },
@@ -107,14 +104,12 @@ const styles = StyleSheet.create({
     height: 200,
     justifyContent: 'center',
     alignItems: 'center',
-    opacity: 0.2,
   },
   textureShape1: {
     width: 140,
     height: 140,
     borderRadius: 30,
     borderWidth: 2,
-    borderColor: Colors.primary,
     position: 'absolute',
     transform: [{ rotate: '45deg' }],
   },
@@ -123,12 +118,10 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#6366f1',
     position: 'absolute',
     transform: [{ rotate: '-15deg' }],
   },
   darkOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(9, 9, 11, 0.7)', // Slightly darker for focus
   },
 });

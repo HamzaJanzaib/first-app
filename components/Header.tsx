@@ -1,7 +1,7 @@
-import Colors from "@/constants/color";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useTheme } from "@/context/ThemeContext";
 
 type HeaderProps = {
   onPressNotification?: () => void;
@@ -10,19 +10,21 @@ type HeaderProps = {
 };
 
 const Header = ({ onPressNotification, onPressSearch, title = "Today's Task" }: HeaderProps) => {
+  const { colors } = useTheme();
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.iconButton} onPress={onPressSearch}>
-        <Ionicons name="search" size={22} color={Colors.textPrimary} />
+      <TouchableOpacity style={[styles.iconButton, { backgroundColor: colors.surface }]} onPress={onPressSearch}>
+        <Ionicons name="search" size={22} color={colors.textPrimary} />
       </TouchableOpacity>
 
-      <Text style={styles.title}>{title}</Text>
+      <Text style={[styles.title, { color: colors.textPrimary }]}>{title}</Text>
 
-      <TouchableOpacity style={styles.iconButton} onPress={onPressNotification}>
+      <TouchableOpacity style={[styles.iconButton, { backgroundColor: colors.surface }]} onPress={onPressNotification}>
         <Ionicons
           name="notifications-outline"
           size={22}
-          color={Colors.textPrimary}
+          color={colors.textPrimary}
         />
       </TouchableOpacity>
     </View>
@@ -41,16 +43,14 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   iconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: Colors.surface,
+    width: 44,
+    height: 44,
+    borderRadius: 14,
     justifyContent: "center",
     alignItems: "center",
   },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "700",
-    color: Colors.textPrimary,
   },
 });

@@ -1,4 +1,3 @@
-import Colors from '@/constants/color';
 import { FlatList, Pressable, StyleSheet, Text, View, Modal } from 'react-native';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,13 +10,16 @@ import TaskCard from '@/components/TaskCard';
 import { useTasks } from '@/context/TaskContext';
 import { Link, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import Animated, { FadeInUp, FadeInDown, FadeOut, Layout } from 'react-native-reanimated';
+import Animated, { FadeInUp, FadeInDown, FadeOut } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import AttractionBackground from '@/components/AttractionBackground';
+import { useTheme } from '@/context/ThemeContext';
 
 const Index = () => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { colors, theme } = useTheme();
+  
   const [selectedFilter, setSelectedFilter] = useState<FilterOptions>('All');
   const [selectedDate, setSelectedDate] = useState<string>(TODAY_KEY);
   const [isNotificationVisible, setIsNotificationVisible] = useState(false);
@@ -25,13 +27,9 @@ const Index = () => {
 
   const filteredTasks = useMemo(() => {
     let result = tasks;
-
-    // First filter by Selected Date
     result = result.filter(
       (task) => task.createdAt.split('T')[0] === selectedDate
     );
-
-    // Then filter by Task Status if not 'All'
     if (selectedFilter !== 'All') {
       const statusMap: Record<string, string> = {
         'To do': 'Todo',
@@ -40,7 +38,6 @@ const Index = () => {
       };
       result = result.filter((task) => task.status === statusMap[selectedFilter]);
     }
-
     return result;
   }, [tasks, selectedFilter, selectedDate]);
 
@@ -68,9 +65,9 @@ const Index = () => {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top, paddingLeft: insets.left, paddingRight: insets.right }]} >
+    <View style={[styles.container, { paddingTop: insets.top, backgroundColor: colors.background }]} >
       <AttractionBackground />
-      <ExpoStatusBar style="light" backgroundColor={Colors.background} />
+      <ExpoStatusBar style={theme === 'dark' ? 'light' : 'dark'} backgroundColor={colors.background} />
 
       <FlatList
         data={filteredTasks}
@@ -112,30 +109,30 @@ const Index = () => {
           <Animated.View 
             entering={FadeInDown.springify()} 
             exiting={FadeOut.duration(200)}
-            style={styles.modalContent}
+            style={[styles.modalContent, { backgroundColor: colors.surface, borderColor: colors.border }]}
           >
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Notifications</Text>
+              <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>Notifications</Text>
               <Pressable 
                 onPress={() => setIsNotificationVisible(false)}
                 style={styles.closeBtn}
               >
-                <Ionicons name="close" size={24} color={Colors.textSecondary} />
+                <Ionicons name="close" size={24} color={colors.textSecondary} />
               </Pressable>
             </View>
 
             <View style={styles.notifList}>
               {upcomingTasks.length === 0 ? (
-                <Text style={styles.emptyNotif}>You're all caught up!</Text>
+                <Text style={[styles.emptyNotif, { color: colors.textSecondary }]}>You're all caught up!</Text>
               ) : (
-                upcomingTasks.map((task, idx) => (
-                  <View key={task.id} style={styles.notifItem}>
-                    <View style={[styles.notifIcon, { backgroundColor: task.icon.backgroundColor || Colors.primary }]}>
+                upcomingTasks.map((task) => (
+                  <View key={task.id} style={[styles.notifItem, { backgroundColor: colors.background, borderColor: colors.border }]}>
+                    <View style={[styles.notifIcon, { backgroundColor: task.icon.backgroundColor || colors.primary }]}>
                       <Ionicons name={task.icon.name as any} size={16} color="#fff" />
                     </View>
                     <View style={styles.notifText}>
-                      <Text style={styles.notifLabel} numberOfLines={1}>Upcoming: {task.title}</Text>
-                      <Text style={styles.notifTime}>{task.time}</Text>
+                      <Text style={[styles.notifLabel, { color: colors.textPrimary }]} numberOfLines={1}>Upcoming: {task.title}</Text>
+                      <Text style={[styles.notifTime, { color: colors.textSecondary }]}>{task.time}</Text>
                     </View>
                   </View>
                 ))
@@ -143,8 +140,8 @@ const Index = () => {
             </View>
 
             <Pressable style={styles.viewAllBtn} onPress={handleViewAll}>
-              <Text style={styles.viewAllText}>View all notifications</Text>
-              <Ionicons name="arrow-forward" size={16} color={Colors.primary} />
+              <Text style={[styles.viewAllText, { color: colors.primary }]}>View all notifications</Text>
+              <Ionicons name="arrow-forward" size={16} color={colors.primary} />
             </Pressable>
           </Animated.View>
         </View>
@@ -159,18 +156,17 @@ export default Index;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   list: {
     padding: 8,
-    paddingBottom: 100, // accommodate tabs
+    paddingBottom: 100,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.6)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: 24,
   },
   modalDismiss: {
     position: 'absolute',
@@ -181,11 +177,9 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: '100%',
-    backgroundColor: Colors.surface,
-    borderRadius: 24,
+    borderRadius: 32,
     padding: 24,
     borderWidth: 1,
-    borderColor: Colors.border,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.3,
@@ -196,12 +190,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 24,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: Colors.textPrimary,
   },
   closeBtn: {
     padding: 4,
@@ -213,35 +206,30 @@ const styles = StyleSheet.create({
   notifItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.background,
-    padding: 12,
-    borderRadius: 16,
+    padding: 14,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   notifIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
+    width: 40,
+    height: 40,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: 14,
   },
   notifText: {
     flex: 1,
   },
   notifLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.textPrimary,
+    fontSize: 15,
+    fontWeight: '700',
     marginBottom: 2,
   },
   notifTime: {
     fontSize: 12,
-    color: Colors.textSecondary,
   },
   emptyNotif: {
-    color: Colors.textSecondary,
     textAlign: 'center',
     marginVertical: 20,
   },
@@ -253,9 +241,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   viewAllText: {
-    color: Colors.primary,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
 });
-

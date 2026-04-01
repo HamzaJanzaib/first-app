@@ -1,18 +1,18 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, FlatList } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import Colors from '@/constants/color';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTasks } from '@/context/TaskContext';
 import TaskCard from '@/components/TaskCard';
 import Animated, { FadeInUp } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
 import AttractionBackground from '@/components/AttractionBackground';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function SearchTasks() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { colors } = useTheme();
   const { tasks } = useTasks();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -26,26 +26,26 @@ export default function SearchTasks() {
   }, [tasks, searchQuery]);
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: insets.top, backgroundColor: colors.background }]}>
       <AttractionBackground />
       <Stack.Screen options={{ headerShown: false }} />
       
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Find Tasks</Text>
+        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Find Tasks</Text>
       </View>
 
-      <View style={styles.searchContainer}>
-        <Ionicons name="search" size={20} color={Colors.textSecondary} style={styles.searchIcon} />
+      <View style={[styles.searchContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <Ionicons name="search" size={20} color={colors.textSecondary} style={styles.searchIcon} />
         <TextInput
-          style={styles.input}
+          style={[styles.input, { color: colors.textPrimary }]}
           placeholder="Search by title or label..."
-          placeholderTextColor={Colors.textSecondary}
+          placeholderTextColor={colors.textSecondary}
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
         {searchQuery.length > 0 && (
           <Pressable onPress={() => setSearchQuery('')}>
-            <Ionicons name="close-circle" size={20} color={Colors.textSecondary} />
+            <Ionicons name="close-circle" size={20} color={colors.textSecondary} />
           </Pressable>
         )}
       </View>
@@ -57,13 +57,13 @@ export default function SearchTasks() {
         ListEmptyComponent={
           searchQuery.trim() ? (
             <View style={styles.emptyContainer}>
-              <Ionicons name="sad-outline" size={48} color={Colors.textSecondary} />
-              <Text style={styles.emptyText}>No matches for "{searchQuery}"</Text>
+              <Ionicons name="sad-outline" size={48} color={colors.textSecondary} />
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No matches for "{searchQuery}"</Text>
             </View>
           ) : (
             <View style={styles.initialContainer}>
-              <Ionicons name="search-outline" size={64} color={Colors.border} />
-              <Text style={styles.initialText}>Search any task or category</Text>
+              <Ionicons name="search-outline" size={64} color={colors.border} />
+              <Text style={[styles.initialText, { color: colors.textSecondary }]}>Search any task or category</Text>
             </View>
           )
         }
@@ -82,7 +82,6 @@ export default function SearchTasks() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   header: {
     paddingHorizontal: 24,
@@ -91,27 +90,29 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: Colors.textPrimary,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
     margin: 24,
     marginTop: 8,
     paddingHorizontal: 16,
-    borderRadius: 16,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: Colors.border,
-    height: 54,
+    height: 60,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 4,
   },
   searchIcon: {
     marginRight: 12,
   },
   input: {
     flex: 1,
-    color: Colors.textPrimary,
     fontSize: 16,
+    fontWeight: '500',
   },
   list: {
     padding: 24,
@@ -124,7 +125,6 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   emptyText: {
-    color: Colors.textSecondary,
     fontSize: 16,
     textAlign: 'center',
   },
@@ -134,7 +134,6 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   initialText: {
-    color: Colors.textSecondary,
     fontSize: 18,
     fontWeight: '500',
   },

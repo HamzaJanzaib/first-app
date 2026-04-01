@@ -1,9 +1,8 @@
-import Colors from "@/constants/color";
-import React, { useState } from "react";
+import React from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
-
 import * as Haptics from 'expo-haptics';
-import Animated, { FadeIn, FadeInRight } from 'react-native-reanimated';
+import Animated, { FadeInRight } from 'react-native-reanimated';
+import { useTheme } from "@/context/ThemeContext";
 
 type DateItem = {
   month: string;
@@ -14,21 +13,20 @@ type DateItem = {
 
 const generateDates = (): DateItem[] => {
   const base = new Date();
-  base.setDate(base.getDate() - 3); // Start 3 days ago
-  return Array.from({ length: 14 }, (_, i) => { // Next 14 days
+  base.setDate(base.getDate() - 3); 
+  return Array.from({ length: 14 }, (_, i) => { 
     const date = new Date(base);
     date.setDate(base.getDate() + i);
     return {
       month: date.toLocaleDateString("en-US", { month: "short" }),
       day: date.getDate(),
       weekday: date.toLocaleDateString("en-US", { weekday: "short" }),
-      key: date.toISOString().split('T')[0], // YYYY-MM-DD format for easy matching
+      key: date.toISOString().split('T')[0],
     };
   });
 };
 
 export const DATES = generateDates();
-// Today's date will be index 3.
 export const TODAY_KEY = DATES[3].key;
 
 type DateSelectorProps = {
@@ -37,6 +35,7 @@ type DateSelectorProps = {
 };
 
 const DateSelector = ({ selectedDate, onSelectDate }: DateSelectorProps) => {
+  const { colors } = useTheme();
 
   return (
     <ScrollView
@@ -50,21 +49,24 @@ const DateSelector = ({ selectedDate, onSelectDate }: DateSelectorProps) => {
         return (
           <Animated.View key={item.key} entering={FadeInRight.delay(index * 50).springify()}>
             <TouchableOpacity
-              style={[styles.dateItem, isSelected && styles.dateItemSelected]}
+              style={[
+                styles.dateItem, 
+                isSelected ? { backgroundColor: colors.primary } : { backgroundColor: 'transparent' }
+              ]}
               onPress={() => {
                 Haptics.selectionAsync();
                 onSelectDate(item.key);
               }}
             >
-              <Text style={[styles.month, isSelected && styles.selectedText]}>
+              <Text style={[styles.month, { color: isSelected ? "#fff" : colors.textSecondary }]}>
                 {item.month}
               </Text>
 
-              <Text style={[styles.day, isSelected && styles.selectedText]}>
+              <Text style={[styles.day, { color: isSelected ? "#fff" : colors.textPrimary }]}>
                 {item.day}
               </Text>
 
-              <Text style={[styles.weekday, isSelected && styles.selectedText]}>
+              <Text style={[styles.weekday, { color: isSelected ? "#fff" : colors.textSecondary }]}>
                 {item.weekday}
               </Text>
             </TouchableOpacity>
@@ -91,25 +93,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     minWidth: 64,
   },
-  dateItemSelected: {
-    backgroundColor: Colors.primary,
-  },
   month: {
     fontSize: 12,
-    color: Colors.textSecondary,
     marginBottom: 6,
+    fontWeight: '500',
   },
   day: {
     fontSize: 22,
     fontWeight: "700",
-    color: Colors.textPrimary,
     marginBottom: 6,
   },
   weekday: {
     fontSize: 12,
-    color: Colors.textSecondary,
-  },
-  selectedText: {
-    color: "#FFFFFF",
+    fontWeight: '500',
   },
 });
