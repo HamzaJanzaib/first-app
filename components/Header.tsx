@@ -3,16 +3,21 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const Header = () => {
+type HeaderProps = {
+  onPressNotification?: () => void;
+  onPressBack?: () => void;
+};
+
+const Header = ({ onPressNotification, onPressBack }: HeaderProps) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.iconButton}>
+      <TouchableOpacity style={styles.iconButton} onPress={onPressBack}>
         <Ionicons name="chevron-back" size={22} color={Colors.textPrimary} />
       </TouchableOpacity>
 
       <Text style={styles.title}>Today's Task</Text>
 
-      <TouchableOpacity style={styles.iconButton}>
+      <TouchableOpacity style={styles.iconButton} onPress={onPressNotification}>
         <Ionicons
           name="notifications-outline"
           size={22}

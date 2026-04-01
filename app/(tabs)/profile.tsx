@@ -1,14 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, Pressable, ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Colors from '@/constants/color';
+import { View, Text, StyleSheet, Pressable, Image, ScrollView } from 'react-native';
+import { useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Link, useRouter } from 'expo-router';
+import Colors from '@/constants/color';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 
 const Profile = () => {
-  const insets = useSafeAreaInsets();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const handlePress = (route: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -16,87 +16,54 @@ const Profile = () => {
   };
 
   return (
-    <ScrollView style={[styles.container, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Profile</Text>
-      </View>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <Stack.Screen options={{ headerShown: false }} />
+      
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>My Profile</Text>
+          <Pressable onPress={() => handlePress('/profile/settings')} style={styles.settingsBtn}>
+            <Ionicons name="settings-outline" size={24} color={Colors.textPrimary} />
+          </Pressable>
+        </View>
 
-      <View style={styles.content}>
-        <View style={styles.profileCard}>
+        <View style={styles.profileSection}>
           <View style={styles.avatarContainer}>
             <Image 
               source={{ uri: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' }} 
               style={styles.avatar} 
             />
-            <Pressable style={styles.editAvatar} onPress={() => handlePress('/profile/edit')}>
+            <Pressable style={styles.cameraBtn} onPress={() => handlePress('/profile/edit')}>
               <Ionicons name="camera" size={16} color="#fff" />
             </Pressable>
           </View>
+          <Text style={styles.userName}>John Doe</Text>
+          <Text style={styles.userEmail}>john.doe@example.com</Text>
           
-          <Text style={styles.name}>John Doe</Text>
-          <Text style={styles.email}>john.doe@example.com</Text>
-
-          <View style={styles.statsRow}>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>12</Text>
-              <Text style={styles.statLabel}>Pending</Text>
-            </View>
-            <View style={styles.divider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>45</Text>
-              <Text style={styles.statLabel}>Done</Text>
-            </View>
-            <View style={styles.divider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>3</Text>
-              <Text style={styles.statLabel}>Total</Text>
-            </View>
-          </View>
-          
-          <Pressable style={styles.editProfileButton} onPress={() => handlePress('/profile/edit')}>
-            <Text style={styles.editProfileText}>Edit Profile</Text>
+          <Pressable style={styles.editBtn} onPress={() => handlePress('/profile/edit')}>
+            <Text style={styles.editBtnText}>Edit Profile</Text>
           </Pressable>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Settings</Text>
-          
-          <Pressable style={styles.settingItem} onPress={() => handlePress('/profile/notifications')}>
-            <View style={[styles.settingIcon, { backgroundColor: '#F0F9FF' }]}>
-              <Ionicons name="notifications" size={20} color="#0EA5E9" />
+        <View style={styles.menuSection}>
+          <Pressable style={styles.menuItem} onPress={() => handlePress('/profile/notifications')}>
+            <View style={[styles.menuIconContainer, { backgroundColor: Colors.primaryMuted }]}>
+              <Ionicons name="notifications" size={22} color={Colors.primary} />
             </View>
-            <Text style={styles.settingLabel}>Notifications</Text>
+            <Text style={styles.menuItemText}>Notifications</Text>
             <Ionicons name="chevron-forward" size={20} color={Colors.textSecondary} />
           </Pressable>
 
-          <Pressable style={styles.settingItem} onPress={() => handlePress('/profile/privacy')}>
-            <View style={[styles.settingIcon, { backgroundColor: '#FDF2F8' }]}>
-              <Ionicons name="lock-closed" size={20} color="#EC4899" />
+          <Pressable style={styles.menuItem} onPress={() => handlePress('/profile/settings')}>
+            <View style={[styles.menuIconContainer, { backgroundColor: '#F0F9FF' }]}>
+              <Ionicons name="settings" size={22} color="#0EA5E9" />
             </View>
-            <Text style={styles.settingLabel}>Privacy</Text>
-            <Ionicons name="chevron-forward" size={20} color={Colors.textSecondary} />
-          </Pressable>
-
-          <Pressable style={styles.settingItem} onPress={() => handlePress('/profile/help')}>
-            <View style={[styles.settingIcon, { backgroundColor: '#F0FDF4' }]}>
-              <Ionicons name="help-circle" size={20} color="#22C55E" />
-            </View>
-            <Text style={styles.settingLabel}>Help Center</Text>
+            <Text style={styles.menuItemText}>Settings</Text>
             <Ionicons name="chevron-forward" size={20} color={Colors.textSecondary} />
           </Pressable>
         </View>
-
-        <Pressable 
-          style={styles.logoutButton} 
-          onPress={() => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-            // Handle logical logout
-          }}
-        >
-          <Text style={styles.logoutText}>Log Out</Text>
-        </Pressable>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -107,27 +74,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
+  content: {
+    padding: 24,
+  },
   header: {
-    paddingHorizontal: 20,
-    paddingBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 32,
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: 'bold',
     color: Colors.textPrimary,
   },
-  content: {
-    padding: 20,
-    paddingBottom: 100,
+  settingsBtn: {
+    padding: 8,
   },
-  profileCard: {
-    backgroundColor: Colors.surface,
-    borderRadius: 24,
-    padding: 24,
+  profileSection: {
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border,
-    marginBottom: 30,
+    marginBottom: 40,
   },
   avatarContainer: {
     position: 'relative',
@@ -137,8 +103,10 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
+    borderWidth: 3,
+    borderColor: Colors.surface,
   },
-  editAvatar: {
+  cameraBtn: {
     position: 'absolute',
     bottom: 0,
     right: 0,
@@ -148,100 +116,57 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 3,
-    borderColor: Colors.surface,
+    borderWidth: 2,
+    borderColor: Colors.background,
   },
-  name: {
-    fontSize: 20,
+  userName: {
+    fontSize: 22,
     fontWeight: 'bold',
     color: Colors.textPrimary,
     marginBottom: 4,
   },
-  email: {
+  userEmail: {
     fontSize: 14,
     color: Colors.textSecondary,
-    marginBottom: 24,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-  },
-  statItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  statValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.textPrimary,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-    marginTop: 4,
-  },
-  divider: {
-    width: 1,
-    height: 30,
-    backgroundColor: Colors.border,
-  },
-  editProfileButton: {
-    marginTop: 20,
-    backgroundColor: Colors.primary,
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 20,
-  },
-  editProfileText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  section: {
-    marginBottom: 30,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.textPrimary,
     marginBottom: 16,
   },
-  settingItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  editBtn: {
     backgroundColor: Colors.surface,
-    padding: 12,
-    borderRadius: 16,
-    marginBottom: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: Colors.border,
   },
-  settingIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+  editBtnText: {
+    color: Colors.textPrimary,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  menuSection: {
+    backgroundColor: Colors.surface,
+    borderRadius: 24,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    gap: 16,
+  },
+  menuIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
   },
-  settingLabel: {
+  menuItemText: {
     flex: 1,
     fontSize: 16,
+    fontWeight: '600',
     color: Colors.textPrimary,
-    fontWeight: '500',
-  },
-  logoutButton: {
-    padding: 18,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#F87171',
-    alignItems: 'center',
-  },
-  logoutText: {
-    color: '#F87171',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });

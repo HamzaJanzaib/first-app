@@ -14,5 +14,5 @@ export default function RootLayout() {
         <Stack.Screen name="task/[id]" options={{ presentation: 'card' }} />
       </Stack>
     </TaskProvider>
-  );
+  )
 }

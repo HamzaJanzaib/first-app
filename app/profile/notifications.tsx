@@ -13,13 +13,12 @@ export default function Notifications() {
   const router = useRouter();
   const { tasks } = useTasks();
 
-  // Show tasks that are not 'Done' as upcoming notifications
-  const upcomingTasks = tasks.filter(t => t.status !== 'Done');
-
   const handleBack = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     router.back();
   };
+
+  const upcomingTasks = tasks.filter(t => t.status !== 'Done');
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -30,7 +29,7 @@ export default function Notifications() {
           <Ionicons name="arrow-back" size={24} color={Colors.textPrimary} />
         </Pressable>
         <Text style={styles.headerTitle}>Notifications</Text>
-        <View style={{ width: 24 }} /> {/* Empty view for balance */}
+        <View style={{ width: 24 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>

@@ -5,9 +5,11 @@ import Colors from '@/constants/color';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function EditProfile() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [name, setName] = useState('John Doe');
   const [email, setEmail] = useState('john.doe@example.com');
   const [phone, setPhone] = useState('+1 234 567 8900');
@@ -17,66 +19,74 @@ export default function EditProfile() {
     router.back();
   };
 
+  const handleBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.back();
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      <Stack.Screen 
-        options={{ 
-          title: 'Edit Profile', 
-          headerShown: true,
-          headerStyle: { backgroundColor: Colors.surface }, 
-          headerTintColor: Colors.textPrimary 
-        }} 
-      />
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <Stack.Screen options={{ headerShown: false }} />
 
-      <Animated.View entering={FadeInDown.delay(100).springify()} style={styles.content}>
-        <View style={styles.avatarSection}>
-          <Image 
-            source={{ uri: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' }} 
-            style={styles.avatar} 
-          />
-          <Pressable style={styles.changeAvatarBtn} onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}>
-            <Ionicons name="camera" size={20} color="#fff" />
-            <Text style={styles.changeAvatarText}>Change Photo</Text>
-          </Pressable>
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Full Name</Text>
-          <TextInput 
-            style={styles.input} 
-            value={name} 
-            onChangeText={setName} 
-            placeholderTextColor={Colors.textSecondary} 
-          />
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Email Address</Text>
-          <TextInput 
-            style={styles.input} 
-            value={email} 
-            onChangeText={setEmail} 
-            keyboardType="email-address"
-            placeholderTextColor={Colors.textSecondary} 
-          />
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Phone Number</Text>
-          <TextInput 
-            style={styles.input} 
-            value={phone} 
-            onChangeText={setPhone} 
-            keyboardType="phone-pad"
-            placeholderTextColor={Colors.textSecondary} 
-          />
-        </View>
-
-        <Pressable style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>Save Changes</Text>
+      <View style={styles.header}>
+        <Pressable onPress={handleBack} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color={Colors.textPrimary} />
         </Pressable>
-      </Animated.View>
-    </ScrollView>
+        <Text style={styles.headerTitle}>Edit Profile</Text>
+        <View style={{ width: 24 }} />
+      </View>
+
+      <ScrollView contentContainerStyle={styles.content}>
+        <Animated.View entering={FadeInDown.delay(100).springify()}>
+          <View style={styles.avatarSection}>
+            <Image 
+              source={{ uri: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' }} 
+              style={styles.avatar} 
+            />
+            <Pressable style={styles.changeAvatarBtn} onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}>
+              <Ionicons name="camera" size={20} color="#fff" />
+              <Text style={styles.changeAvatarText}>Change Photo</Text>
+            </Pressable>
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Full Name</Text>
+            <TextInput 
+              style={styles.input} 
+              value={name} 
+              onChangeText={setName} 
+              placeholderTextColor={Colors.textSecondary} 
+            />
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Email Address</Text>
+            <TextInput 
+              style={styles.input} 
+              value={email} 
+              onChangeText={setEmail} 
+              keyboardType="email-address"
+              placeholderTextColor={Colors.textSecondary} 
+            />
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Phone Number</Text>
+            <TextInput 
+              style={styles.input} 
+              value={phone} 
+              onChangeText={setPhone} 
+              keyboardType="phone-pad"
+              placeholderTextColor={Colors.textSecondary} 
+            />
+          </View>
+
+          <Pressable style={styles.saveButton} onPress={handleSave}>
+            <Text style={styles.saveButtonText}>Save Changes</Text>
+          </Pressable>
+        </Animated.View>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -84,6 +94,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  backButton: {
+    padding: 8,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: Colors.textPrimary,
   },
   content: {
     padding: 24,
