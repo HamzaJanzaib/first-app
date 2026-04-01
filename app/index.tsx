@@ -47,6 +47,6 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
   },
   list: {
-    padding: 12,
+    padding: 8,
   }
 })
