@@ -1,251 +1,304 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Alert, ScrollView } from 'react-native';
+import React from 'react';
+import {
+  View, Text, StyleSheet, Pressable, Alert, ScrollView, Dimensions
+} from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useTasks } from '@/context/TaskContext';
-import Colors from '@/constants/color';
 import { Ionicons } from '@expo/vector-icons';
-import { TaskStatus } from '@/constants/task';
 import * as Haptics from 'expo-haptics';
+import Animated, { FadeInUp, FadeInDown, ZoomIn } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AttractionBackground from '@/components/AttractionBackground';
+import { useTheme } from '@/context/ThemeContext';
+
+const { width } = Dimensions.get('window');
+
+const STATUS_CONFIG = {
+  'Done':        { color: '#4ade80', icon: 'checkmark-circle' as const, label: 'Completed' },
+  'In Progress': { color: '#fbbf24', icon: 'flash' as const,            label: 'In Progress' },
+  'Todo':        { color: '#60a5fa', icon: 'ellipse' as const,          label: 'To Do' },
+};
 
 const TaskDetails = () => {
   const { id } = useLocalSearchParams();
-  const { tasks, updateTask, deleteTask } = useTasks();
+  const { tasks, deleteTask } = useTasks();
+  const { colors, isDark } = useTheme();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const task = tasks.find((t) => t.id === id);
 
   if (!task) {
     return (
-      <View style={styles.centered}>
-        <Stack.Screen options={{ headerShown: true, title: 'Error' }} />
-        <Text style={styles.errorText}>Task not found</Text>
+      <View style={[styles.centered, { backgroundColor: colors.background }]}>
+        <Stack.Screen options={{ headerShown: false }} />
+        <Ionicons name="alert-circle-outline" size={64} color={colors.textSecondary} />
+        <Text style={[styles.errorText, { color: colors.textSecondary }]}>Task not found</Text>
+        <Pressable onPress={() => router.back()} style={[styles.backFallback, { backgroundColor: colors.primary }]}>
+          <Text style={{ color: '#fff', fontWeight: '700' }}>Go Back</Text>
+        </Pressable>
       </View>
     );
   }
 
+  const badgeColor = task.icon.backgroundColor || colors.primary;
+  const statusCfg = STATUS_CONFIG[task.status] || STATUS_CONFIG['Todo'];
+  const formattedDate = new Date(task.createdAt).toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+  });
+
   const handleEdit = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.push({
-      pathname: '/edit-task',
-      params: { taskId: id as string }
-    } as any);
+    router.push({ pathname: '/edit-task', params: { taskId: id as string } } as any);
   };
 
   const handleDelete = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-    Alert.alert('Delete Task', 'Are you sure you want to delete this task?', [
+    Alert.alert('Delete Task', 'This action cannot be undone. Are you sure?', [
       { text: 'Cancel', style: 'cancel' },
       {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => {
-          deleteTask(task.id);
-          router.replace('/');
-        },
+        text: 'Delete', style: 'destructive',
+        onPress: () => { deleteTask(task.id); router.replace('/'); },
       },
     ]);
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Stack.Screen options={{ title: 'Details', headerShown: true, headerStyle: { backgroundColor: Colors.surface }, headerTintColor: Colors.textPrimary }} />
-      
-      <View style={styles.card}>
-        <View style={[styles.iconBadge, { backgroundColor: task.icon.backgroundColor || Colors.primary }]}>
-          <Ionicons name={task.icon.name as any} size={32} color="#fff" />
-        </View>
-        
-        <Text style={styles.category}>{task.category}</Text>
-        <Text style={styles.title}>{task.title}</Text>
-        
-        <View style={styles.infoRow}>
-          <Ionicons name="time-outline" size={20} color={Colors.primary} />
-          <Text style={styles.infoText}>{task.time}</Text>
-        </View>
+    <View style={[styles.container, { paddingTop: insets.top, backgroundColor: colors.background }]}>
+      <AttractionBackground />
+      <Stack.Screen options={{ headerShown: false }} />
 
-        <View style={styles.infoRow}>
-          <Ionicons name="calendar-outline" size={20} color={Colors.primary} />
-          <Text style={styles.infoText}>{new Date(task.createdAt).toLocaleDateString()}</Text>
-        </View>
-
-        <View style={styles.infoRow}>
-          <Ionicons name="flag-outline" size={20} color={Colors.primary} />
-          <Text style={styles.infoText}>{task.status}</Text>
-        </View>
-
-        <View style={styles.actions}>
-          <Pressable style={styles.editButton} onPress={handleEdit}>
-            <Ionicons name="pencil" size={20} color="#fff" />
-            <Text style={styles.actionText}>Edit Task</Text>
-          </Pressable>
-          
-          <Pressable style={styles.deleteButton} onPress={handleDelete}>
-            <Ionicons name="trash" size={20} color="#fff" />
-            <Text style={styles.actionText}>Delete</Text>
-          </Pressable>
-        </View>
+      {/* Custom Header */}
+      <View style={styles.header}>
+        <Pressable
+          onPress={() => router.back()}
+          style={[styles.navBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+        >
+          <Ionicons name="arrow-back" size={22} color={colors.textPrimary} />
+        </Pressable>
+        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Task Details</Text>
+        <Pressable
+          onPress={handleEdit}
+          style={[styles.navBtn, { backgroundColor: colors.primary }]}
+        >
+          <Ionicons name="pencil" size={18} color="#fff" />
+        </Pressable>
       </View>
-    </ScrollView>
+
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+
+        {/* Hero Card */}
+        <Animated.View entering={FadeInUp.springify()} style={[styles.heroCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          {/* Decorative glow behind icon */}
+          <View style={[styles.cardGlow, { backgroundColor: badgeColor }]} />
+
+          {/* Icon + category */}
+          <Animated.View entering={ZoomIn.delay(100).springify()} style={[styles.iconBadge, { backgroundColor: badgeColor, shadowColor: badgeColor }]}>
+            <Ionicons name={task.icon.name as any} size={36} color="#fff" />
+          </Animated.View>
+
+          <Text style={[styles.categoryLabel, { color: colors.textSecondary }]}>{task.category}</Text>
+          <Text style={[styles.taskTitle, { color: colors.textPrimary }]}>{task.title}</Text>
+
+          {/* Status Pill */}
+          <Animated.View
+            entering={FadeInUp.delay(200).springify()}
+            style={[styles.statusPill, { backgroundColor: statusCfg.color + '20', borderColor: statusCfg.color }]}
+          >
+            <Ionicons name={statusCfg.icon} size={16} color={statusCfg.color} />
+            <Text style={[styles.statusPillText, { color: statusCfg.color }]}>{statusCfg.label}</Text>
+          </Animated.View>
+        </Animated.View>
+
+        {/* Meta Info Cards */}
+        <Animated.View entering={FadeInUp.delay(150).springify()} style={styles.metaRow}>
+          {/* Time */}
+          <View style={[styles.metaCard, { backgroundColor: colors.surface, borderColor: colors.border, shadowColor: colors.primary }]}>
+            <View style={[styles.metaIconBox, { backgroundColor: colors.primary + '20' }]}>
+              <Ionicons name="time" size={22} color={colors.primary} />
+            </View>
+            <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>Time</Text>
+            <Text style={[styles.metaValue, { color: colors.textPrimary }]}>{task.time}</Text>
+          </View>
+
+          {/* Date */}
+          <View style={[styles.metaCard, { backgroundColor: colors.surface, borderColor: colors.border, shadowColor: '#6366f1' }]}>
+            <View style={[styles.metaIconBox, { backgroundColor: '#6366f120' }]}>
+              <Ionicons name="calendar" size={22} color="#6366f1" />
+            </View>
+            <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>Date</Text>
+            <Text style={[styles.metaValue, { color: colors.textPrimary }]} numberOfLines={2}>
+              {new Date(task.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </Text>
+          </View>
+
+          {/* Priority */}
+          <View style={[styles.metaCard, { backgroundColor: colors.surface, borderColor: colors.border, shadowColor: statusCfg.color }]}>
+            <View style={[styles.metaIconBox, { backgroundColor: statusCfg.color + '20' }]}>
+              <Ionicons name="flag" size={22} color={statusCfg.color} />
+            </View>
+            <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>Status</Text>
+            <Text style={[styles.metaValue, { color: statusCfg.color }]} numberOfLines={2}>{task.status}</Text>
+          </View>
+        </Animated.View>
+
+        {/* Full Date Detail */}
+        <Animated.View entering={FadeInUp.delay(200).springify()} style={[styles.detailCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={styles.detailRow}>
+            <View style={[styles.detailIconBox, { backgroundColor: colors.primary + '15' }]}>
+              <Ionicons name="calendar-outline" size={20} color={colors.primary} />
+            </View>
+            <View style={styles.detailTextBlock}>
+              <Text style={[styles.detailCardLabel, { color: colors.textSecondary }]}>Full Date</Text>
+              <Text style={[styles.detailCardValue, { color: colors.textPrimary }]}>{formattedDate}</Text>
+            </View>
+          </View>
+
+          <View style={[styles.detailDivider, { backgroundColor: colors.border }]} />
+
+          <View style={styles.detailRow}>
+            <View style={[styles.detailIconBox, { backgroundColor: statusCfg.color + '15' }]}>
+              <Ionicons name={statusCfg.icon} size={20} color={statusCfg.color} />
+            </View>
+            <View style={styles.detailTextBlock}>
+              <Text style={[styles.detailCardLabel, { color: colors.textSecondary }]}>Progress Stage</Text>
+              <Text style={[styles.detailCardValue, { color: statusCfg.color }]}>{statusCfg.label}</Text>
+            </View>
+          </View>
+
+          <View style={[styles.detailDivider, { backgroundColor: colors.border }]} />
+
+          <View style={styles.detailRow}>
+            <View style={[styles.detailIconBox, { backgroundColor: '#10b98115' }]}>
+              <Ionicons name="folder-outline" size={20} color="#10b981" />
+            </View>
+            <View style={styles.detailTextBlock}>
+              <Text style={[styles.detailCardLabel, { color: colors.textSecondary }]}>Category</Text>
+              <Text style={[styles.detailCardValue, { color: colors.textPrimary }]}>{task.category}</Text>
+            </View>
+          </View>
+        </Animated.View>
+
+        {/* Action Buttons */}
+        <Animated.View entering={FadeInDown.delay(300).springify()} style={styles.actions}>
+          <Pressable style={[styles.editBtn, { backgroundColor: colors.primary }]} onPress={handleEdit}>
+            <Ionicons name="pencil-outline" size={20} color="#fff" />
+            <Text style={styles.actionBtnText}>Edit Task</Text>
+          </Pressable>
+
+          <Pressable style={styles.deleteBtn} onPress={handleDelete}>
+            <Ionicons name="trash-outline" size={20} color="#f87171" />
+            <Text style={[styles.actionBtnText, { color: '#f87171' }]}>Delete</Text>
+          </Pressable>
+        </Animated.View>
+
+      </ScrollView>
+    </View>
   );
 };
 
 export default TaskDetails;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  content: {
-    padding: 20,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
+  container: { flex: 1 },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 },
+  errorText: { fontSize: 18, fontWeight: '600' },
+  backFallback: { paddingHorizontal: 24, paddingVertical: 12, borderRadius: 14, marginTop: 8 },
+
+  header: {
+    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.background,
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
   },
-  errorText: {
-    color: Colors.statusInProgress,
-    fontSize: 18,
-    fontWeight: '600',
+  navBtn: {
+    width: 44, height: 44, borderRadius: 14,
+    justifyContent: 'center', alignItems: 'center', borderWidth: 1,
   },
-  card: {
-    backgroundColor: Colors.surface,
-    borderRadius: 20,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: Colors.border,
+  headerTitle: { fontSize: 20, fontWeight: '800' },
+
+  content: { padding: 20, paddingBottom: 120, gap: 16 },
+
+  // Hero Card
+  heroCard: {
+    borderRadius: 32, borderWidth: 1, padding: 28,
+    overflow: 'hidden', position: 'relative',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1, shadowRadius: 20, elevation: 6,
+  },
+  cardGlow: {
+    position: 'absolute', top: -40, right: -40,
+    width: 140, height: 140, borderRadius: 70, opacity: 0.12,
   },
   iconBadge: {
-    width: 64,
-    height: 64,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: 72, height: 72, borderRadius: 24,
+    justifyContent: 'center', alignItems: 'center',
     marginBottom: 20,
-    alignSelf: 'flex-start',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4, shadowRadius: 12, elevation: 8,
   },
-  category: {
-    fontSize: 14,
-    color: Colors.textSecondary,
+  categoryLabel: {
+    fontSize: 13, fontWeight: '700',
+    textTransform: 'uppercase', letterSpacing: 1,
     marginBottom: 8,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.textPrimary,
-    marginBottom: 24,
+  taskTitle: {
+    fontSize: 28, fontWeight: '800',
+    lineHeight: 34, marginBottom: 20,
   },
-  infoRow: {
-    flexDirection: 'row',
+  statusPill: {
+    flexDirection: 'row', alignItems: 'center',
+    alignSelf: 'flex-start', gap: 8,
+    paddingHorizontal: 14, paddingVertical: 8,
+    borderRadius: 20, borderWidth: 1,
+  },
+  statusPillText: { fontSize: 14, fontWeight: '700' },
+
+  // Meta Row
+  metaRow: { flexDirection: 'row', gap: 12 },
+  metaCard: {
+    flex: 1, borderRadius: 22, borderWidth: 1, padding: 16,
     alignItems: 'center',
-    marginBottom: 16,
-    gap: 8,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15, shadowRadius: 10, elevation: 4,
   },
-  infoText: {
-    fontSize: 16,
-    color: Colors.textPrimary,
-    fontWeight: '500',
+  metaIconBox: {
+    width: 44, height: 44, borderRadius: 14,
+    justifyContent: 'center', alignItems: 'center', marginBottom: 10,
   },
-  actions: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 24,
+  metaLabel: { fontSize: 11, fontWeight: '700', textTransform: 'uppercase', marginBottom: 4, textAlign: 'center' },
+  metaValue: { fontSize: 14, fontWeight: '800', textAlign: 'center' },
+
+  // Detail Card
+  detailCard: {
+    borderRadius: 28, borderWidth: 1, overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.06, shadowRadius: 12, elevation: 3,
   },
-  editButton: {
-    flex: 1,
-    backgroundColor: Colors.primary,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-    borderRadius: 12,
-    gap: 8,
+  detailRow: { flexDirection: 'row', alignItems: 'center', padding: 18, gap: 16 },
+  detailDivider: { height: 1, marginHorizontal: 18 },
+  detailIconBox: { width: 44, height: 44, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
+  detailTextBlock: { flex: 1 },
+  detailCardLabel: { fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 },
+  detailCardValue: { fontSize: 16, fontWeight: '700' },
+
+  // Actions
+  actions: { gap: 12 },
+  editBtn: {
+    flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
+    gap: 10, padding: 18, borderRadius: 22,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2, shadowRadius: 12, elevation: 6,
   },
-  deleteButton: {
-    flex: 1,
-    backgroundColor: Colors.statusInProgress,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-    borderRadius: 12,
-    gap: 8,
+  deleteBtn: {
+    flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
+    gap: 10, padding: 18, borderRadius: 22,
+    backgroundColor: 'rgba(248, 113, 113, 0.1)',
+    borderWidth: 1, borderColor: 'rgba(248, 113, 113, 0.3)',
   },
-  actionText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  label: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    marginBottom: 8,
-    fontWeight: '500',
-  },
-  input: {
-    backgroundColor: Colors.background,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 12,
-    padding: 16,
-    color: Colors.textPrimary,
-    fontSize: 16,
-    marginBottom: 20,
-  },
-  statusButtons: {
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: 24,
-  },
-  statusButton: {
-    flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 8,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  statusButtonActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  statusButtonText: {
-    fontSize: 12,
-    color: Colors.textPrimary,
-    fontWeight: '500',
-  },
-  statusButtonTextActive: {
-    color: '#fff',
-  },
-  saveButton: {
-    backgroundColor: Colors.primary,
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  saveButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  cancelButton: {
-    backgroundColor: 'transparent',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  cancelButtonText: {
-    color: Colors.textPrimary,
-    fontSize: 16,
-    fontWeight: '600',
-  },
+  actionBtnText: { fontSize: 17, fontWeight: '800', color: '#fff' },
 });
