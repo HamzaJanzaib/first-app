@@ -2,6 +2,9 @@ import Colors from "@/constants/color";
 import React, { useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
 
+import * as Haptics from 'expo-haptics';
+import Animated, { FadeIn, FadeInRight } from 'react-native-reanimated';
+
 type DateItem = {
   month: string;
   day: number;
@@ -10,8 +13,9 @@ type DateItem = {
 };
 
 const generateDates = (): DateItem[] => {
-  const base = new Date(2026, 2, 23);
-  return Array.from({ length: 5 }, (_, i) => {
+  const base = new Date();
+  base.setDate(base.getDate() - 3); // Start 3 days ago
+  return Array.from({ length: 14 }, (_, i) => { // Next 14 days
     const date = new Date(base);
     date.setDate(base.getDate() + i);
     return {
@@ -24,6 +28,8 @@ const generateDates = (): DateItem[] => {
 };
 
 export const DATES = generateDates();
+// Today's date will be index 3.
+export const TODAY_KEY = DATES[3].key;
 
 type DateSelectorProps = {
   selectedDate: string;
@@ -38,27 +44,31 @@ const DateSelector = ({ selectedDate, onSelectDate }: DateSelectorProps) => {
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.container}
     >
-      {DATES.map((item) => {
+      {DATES.map((item, index) => {
         const isSelected = item.key === selectedDate;
 
         return (
-          <TouchableOpacity
-            key={item.key}
-            style={[styles.dateItem, isSelected && styles.dateItemSelected]}
-            onPress={() => onSelectDate(item.key)}
-          >
-            <Text style={[styles.month, isSelected && styles.selectedText]}>
-              {item.month}
-            </Text>
+          <Animated.View key={item.key} entering={FadeInRight.delay(index * 50).springify()}>
+            <TouchableOpacity
+              style={[styles.dateItem, isSelected && styles.dateItemSelected]}
+              onPress={() => {
+                Haptics.selectionAsync();
+                onSelectDate(item.key);
+              }}
+            >
+              <Text style={[styles.month, isSelected && styles.selectedText]}>
+                {item.month}
+              </Text>
 
-            <Text style={[styles.day, isSelected && styles.selectedText]}>
-              {item.day}
-            </Text>
+              <Text style={[styles.day, isSelected && styles.selectedText]}>
+                {item.day}
+              </Text>
 
-            <Text style={[styles.weekday, isSelected && styles.selectedText]}>
-              {item.weekday}
-            </Text>
-          </TouchableOpacity>
+              <Text style={[styles.weekday, isSelected && styles.selectedText]}>
+                {item.weekday}
+              </Text>
+            </TouchableOpacity>
+          </Animated.View>
         );
       })}
     </ScrollView>

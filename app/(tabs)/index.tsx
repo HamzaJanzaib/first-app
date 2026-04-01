@@ -4,18 +4,19 @@ import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FilterOptions } from '@/constants/task';
 import Header from '@/components/Header';
-import DateSelector, { DATES } from '@/components/DateSelector';
+import DateSelector, { DATES, TODAY_KEY } from '@/components/DateSelector';
 import React, { useMemo, useState } from 'react';
 import FilterTabs from '@/components/FilterTabs';
 import TaskCard from '@/components/TaskCard';
 import { useTasks } from '@/context/TaskContext';
 import { Link } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 
 const Index = () => {
   const insets = useSafeAreaInsets();
   const [selectedFilter, setSelectedFilter] = useState<FilterOptions>('All');
-  const [selectedDate, setSelectedDate] = useState<string>(DATES[2].key);
+  const [selectedDate, setSelectedDate] = useState<string>(TODAY_KEY);
   const { tasks } = useTasks();
 
   const filteredTasks = useMemo(() => {
@@ -54,12 +55,14 @@ const Index = () => {
           </>
         }
         contentContainerStyle={styles.list}
-        renderItem={({ item }) => (
-          <Link href={`/task/${item.id}` as any} asChild>
-            <Pressable>
-              <TaskCard task={item} />
-            </Pressable>
-          </Link>
+        renderItem={({ item, index }) => (
+          <Animated.View entering={FadeInUp.delay(index * 100).springify()}>
+            <Link href={`/task/${item.id}` as any} asChild>
+              <Pressable>
+                <TaskCard task={item} />
+              </Pressable>
+            </Link>
+          </Animated.View>
         )}
       />
 

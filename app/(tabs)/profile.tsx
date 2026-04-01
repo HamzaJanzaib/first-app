@@ -3,9 +3,17 @@ import { View, Text, StyleSheet, Image, Pressable, ScrollView } from 'react-nati
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '@/constants/color';
 import { Ionicons } from '@expo/vector-icons';
+import { Link, useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 
 const Profile = () => {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+
+  const handlePress = (route: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.push(route as any);
+  };
 
   return (
     <ScrollView style={[styles.container, { paddingTop: insets.top }]}>
@@ -20,7 +28,7 @@ const Profile = () => {
               source={{ uri: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' }} 
               style={styles.avatar} 
             />
-            <Pressable style={styles.editAvatar}>
+            <Pressable style={styles.editAvatar} onPress={() => handlePress('/profile/edit')}>
               <Ionicons name="camera" size={16} color="#fff" />
             </Pressable>
           </View>
@@ -44,12 +52,16 @@ const Profile = () => {
               <Text style={styles.statLabel}>Total</Text>
             </View>
           </View>
+          
+          <Pressable style={styles.editProfileButton} onPress={() => handlePress('/profile/edit')}>
+            <Text style={styles.editProfileText}>Edit Profile</Text>
+          </Pressable>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Settings</Text>
           
-          <Pressable style={styles.settingItem}>
+          <Pressable style={styles.settingItem} onPress={() => handlePress('/profile/notifications')}>
             <View style={[styles.settingIcon, { backgroundColor: '#F0F9FF' }]}>
               <Ionicons name="notifications" size={20} color="#0EA5E9" />
             </View>
@@ -57,7 +69,7 @@ const Profile = () => {
             <Ionicons name="chevron-forward" size={20} color={Colors.textSecondary} />
           </Pressable>
 
-          <Pressable style={styles.settingItem}>
+          <Pressable style={styles.settingItem} onPress={() => handlePress('/profile/privacy')}>
             <View style={[styles.settingIcon, { backgroundColor: '#FDF2F8' }]}>
               <Ionicons name="lock-closed" size={20} color="#EC4899" />
             </View>
@@ -65,7 +77,7 @@ const Profile = () => {
             <Ionicons name="chevron-forward" size={20} color={Colors.textSecondary} />
           </Pressable>
 
-          <Pressable style={styles.settingItem}>
+          <Pressable style={styles.settingItem} onPress={() => handlePress('/profile/help')}>
             <View style={[styles.settingIcon, { backgroundColor: '#F0FDF4' }]}>
               <Ionicons name="help-circle" size={20} color="#22C55E" />
             </View>
@@ -74,7 +86,13 @@ const Profile = () => {
           </Pressable>
         </View>
 
-        <Pressable style={styles.logoutButton}>
+        <Pressable 
+          style={styles.logoutButton} 
+          onPress={() => {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+            // Handle logical logout
+          }}
+        >
           <Text style={styles.logoutText}>Log Out</Text>
         </Pressable>
       </View>
@@ -168,6 +186,18 @@ const styles = StyleSheet.create({
     width: 1,
     height: 30,
     backgroundColor: Colors.border,
+  },
+  editProfileButton: {
+    marginTop: 20,
+    backgroundColor: Colors.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 20,
+  },
+  editProfileText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   section: {
     marginBottom: 30,
